@@ -9,10 +9,11 @@ import (
 
 type UserRepository interface {
 	Create(ctx context.Context, tx *sql.Tx, user User) (User, error)
+	FindById(ctx context.Context, tx *sql.Tx, userId int) (User, error)
+	FindByEmail(ctx context.Context, tx *sql.Tx, email string) (User, error)
 	EditName(ctx context.Context, tx *sql.Tx, user User) error
 	EditPassword(ctx context.Context, tx *sql.Tx, user User) error
 	EditEmail(ctx context.Context, tx *sql.Tx, user User) error
-	FindById(ctx context.Context, tx *sql.Tx, userId int) (User, error)
 }
 
 type UserRepositoryImpl struct {
@@ -70,6 +71,31 @@ func (u *UserRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, userId in
 			`
 
 	row, err := tx.QueryContext(ctx, sql, userId)
+	if err != nil {
+		return user, err
+	}
+
+	if row.Next() {
+		err := row.Scan(&user)
+		if err != nil {
+			return user, err
+		}
+
+		return user, nil
+	}
+
+	return user, helper.ErrNotFound
+}
+
+func (u *UserRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, email string) (User, error) {
+	var user User
+
+	sql := `select id, name, email, password, role, created_at, updated_at
+			from users
+			where email = ?
+			`
+
+	row, err := tx.QueryContext(ctx, sql, email)
 	if err != nil {
 		return user, err
 	}

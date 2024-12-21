@@ -7,11 +7,23 @@ type CreateUserRequest struct {
 	Role     string `json:"role"`
 }
 
-type EditUserRequest struct {
-	Name     string `json:"name"`
+type LoginUserRequest struct {
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type ChangeEmailUserRequest struct {
+type FindUserRequest struct {
+	Id string `uri:"id"`
+}
+
+type EditNameUserRequest struct {
+	Name string `json:"name"`
+}
+
+type EditPasswordUserRequest struct {
+	Password string `json:"password"`
+}
+
+type EditEmailUserRequest struct {
 	Email string `json:"email"`
 }
