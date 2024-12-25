@@ -2,13 +2,30 @@ package config
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func InitDB() (*sql.DB, error) {
-	db, err := sql.Open("mysql", "root@tcp(localhost:3306)/notes")
+type DBConfig struct {
+	User     string
+	Password string
+	Host     string
+	Port     int
+	Name     string
+}
+
+func InitDB(dbConfig DBConfig) (*sql.DB, error) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
+		dbConfig.User,
+		dbConfig.Password,
+		dbConfig.Host,
+		dbConfig.Port,
+		dbConfig.Name,
+	)
+
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
 	}
