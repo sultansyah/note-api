@@ -11,7 +11,7 @@ import (
 type UserService interface {
 	Create(ctx context.Context, input CreateUserRequest) (User, error)
 	FindById(ctx context.Context, input FindUserRequest) (User, error)
-	Login(ctx context.Context, input FindUserRequest) (User, error)
+	Login(ctx context.Context, input LoginUserRequest) (User, error)
 	EditName(ctx context.Context, input EditNameUserRequest, userId int) error
 	EditPassword(ctx context.Context, input EditPasswordUserRequest, userId int) error
 	EditEmail(ctx context.Context, input EditEmailUserRequest, userId int) error
@@ -26,8 +26,24 @@ func NewUserService(userRepository UserRepository, DB *sql.DB) UserService {
 	return &UserServiceImpl{UserRepository: userRepository, DB: DB}
 }
 
-func (u *UserServiceImpl) Login(ctx context.Context, input FindUserRequest) (User, error) {
-	panic("unimplemented")
+func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserRequest) (User, error) {
+	tx, err := u.DB.Begin()
+	if err != nil {
+		return User{}, nil
+	}
+
+	defer helper.HandleTransaction(tx, &err)
+
+	user, err := u.UserRepository.FindByEmail(ctx, tx, input.Email)
+	if err != nil {
+		return User{}, err
+	}
+
+	if user.Id == 0 {
+		return User{}, helper.ErrNotFound
+	}
+
+	return user, nil
 }
 
 func (u *UserServiceImpl) Create(ctx context.Context, input CreateUserRequest) (User, error) {

@@ -48,7 +48,7 @@ func (u *UserHandlerImpl) Register(c *gin.Context) {
 		Code:    http.StatusOK,
 		Status:  "success",
 		Message: "register success",
-		Data:    UserFormatter(user, token),
+		Data:    UserFormatterWithToken(user, token),
 	})
 }
 
@@ -75,17 +75,75 @@ func (u *UserHandlerImpl) Login(c *gin.Context) {
 		Code:    http.StatusOK,
 		Status:  "success",
 		Message: "login success",
-		Data:    UserFormatter(user, token),
+		Data:    UserFormatterWithToken(user, token),
 	})
 }
 
 func (u *UserHandlerImpl) EditEmail(c *gin.Context) {
+	var input EditEmailUserRequest
+
+	if !helper.BindAndValidateJSON(c, &input) {
+		return
+	}
+
+	userId := c.MustGet("userId").(int)
+
+	err := u.UserService.EditEmail(c.Request.Context(), input, userId)
+	if err != nil {
+		helper.HandleErrorResponse(c, err)
+		return
+	}
+
+	helper.APIResponse(c, helper.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "success",
+		Message: "success change email",
+		Data:    nil,
+	})
 }
 
 func (u *UserHandlerImpl) EditName(c *gin.Context) {
-	panic("unimplemented")
+	var input EditNameUserRequest
+
+	if !helper.BindAndValidateJSON(c, &input) {
+		return
+	}
+
+	userId := c.MustGet("userId").(int)
+
+	err := u.UserService.EditName(c.Request.Context(), input, userId)
+	if err != nil {
+		helper.HandleErrorResponse(c, err)
+		return
+	}
+
+	helper.APIResponse(c, helper.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "success",
+		Message: "success change name",
+		Data:    nil,
+	})
 }
 
 func (u *UserHandlerImpl) EditPassword(c *gin.Context) {
-	panic("unimplemented")
+	var input EditPasswordUserRequest
+
+	if !helper.BindAndValidateJSON(c, &input) {
+		return
+	}
+
+	userId := c.MustGet("userId").(int)
+
+	err := u.UserService.EditPassword(c.Request.Context(), input, userId)
+	if err != nil {
+		helper.HandleErrorResponse(c, err)
+		return
+	}
+
+	helper.APIResponse(c, helper.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "success",
+		Message: "success change password",
+		Data:    nil,
+	})
 }

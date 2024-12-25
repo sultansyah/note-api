@@ -12,7 +12,7 @@ type UserWithToken struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func UserFormatter(user User, token string) UserWithToken {
+func UserFormatterWithToken(user User, token string) UserWithToken {
 	return UserWithToken{
 		Id:        user.Id,
 		Name:      user.Name,
