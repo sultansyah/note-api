@@ -6,6 +6,8 @@ import (
 	"github.com/sultansyah/note-api/internal/user"
 )
 
+// Note represents the note model
+// @Description Note information with user details
 type Note struct {
 	Id        int       `json:"id"`
 	UserId    int       `json:"user_id"`

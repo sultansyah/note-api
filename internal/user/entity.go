@@ -2,6 +2,8 @@ package user
 
 import "time"
 
+// User represents the user model
+// @Description User account information
 type User struct {
 	Id        int       `json:"id"`
 	Name      string    `json:"name"`

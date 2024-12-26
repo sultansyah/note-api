@@ -1,0 +1,398 @@
+basePath: /api/v1
+definitions:
+  helper.WebResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  note.CreateNoteRequest:
+    properties:
+      category:
+        example: personal
+        type: string
+      note:
+        example: Buy groceries
+        type: string
+      priority:
+        example: high
+        type: string
+      status:
+        example: pending
+        type: string
+      tags:
+        example: shopping,home
+        type: string
+    type: object
+  note.Note:
+    description: Note information with user details
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      note:
+        type: string
+      priority:
+        type: string
+      status:
+        type: string
+      tags:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/user.User'
+      user_id:
+        type: integer
+    type: object
+  user.CreateUserRequest:
+    properties:
+      email:
+        example: example@example.com
+        type: string
+      name:
+        example: example
+        type: string
+      password:
+        example: secret123
+        type: string
+      role:
+        example: user
+        type: string
+    type: object
+  user.EditEmailUserRequest:
+    properties:
+      email:
+        example: example@example.com
+        type: string
+    type: object
+  user.EditNameUserRequest:
+    properties:
+      name:
+        example: example
+        type: string
+    type: object
+  user.EditPasswordUserRequest:
+    properties:
+      password:
+        example: newpassword123
+        type: string
+    type: object
+  user.LoginUserRequest:
+    properties:
+      email:
+        example: example@example.com
+        type: string
+      password:
+        example: secret123
+        type: string
+    type: object
+  user.User:
+    description: User account information
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  user.UserWithToken:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      role:
+        type: string
+      token:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: A REST API for managing notes and user authentication
+  title: Notes API
+  version: "1.0"
+paths:
+  /auth/email:
+    post:
+      consumes:
+      - application/json
+      description: Update authenticated user's email
+      parameters:
+      - description: New email
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/user.EditEmailUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Edit user email
+      tags:
+      - auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and get token
+      parameters:
+      - description: User login credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/user.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/user.UserWithToken'
+              type: object
+      summary: User login
+      tags:
+      - auth
+  /auth/name:
+    post:
+      consumes:
+      - application/json
+      description: Update authenticated user's name
+      parameters:
+      - description: New name
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/user.EditNameUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Edit user name
+      tags:
+      - auth
+  /auth/password:
+    post:
+      consumes:
+      - application/json
+      description: Update authenticated user's password
+      parameters:
+      - description: New password
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/user.EditPasswordUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Edit user password
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user account
+      parameters:
+      - description: User registration details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/user.UserWithToken'
+              type: object
+      summary: Register new user
+      tags:
+      - auth
+  /notes:
+    get:
+      consumes:
+      - application/json
+      description: Get all notes for authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.WebResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/note.Note'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get all notes
+      tags:
+      - notes
+    post:
+      consumes:
+      - application/json
+      description: Create a new note for authenticated user
+      parameters:
+      - description: Note details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/note.CreateNoteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/note.Note'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Create new note
+      tags:
+      - notes
+  /notes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing note
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/helper.WebResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete note
+      tags:
+      - notes
+    get:
+      consumes:
+      - application/json
+      description: Get a specific note by its ID
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/note.Note'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get note by ID
+      tags:
+      - notes
+    put:
+      consumes:
+      - application/json
+      description: Update an existing note
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated note details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/note.CreateNoteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/note.Note'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Edit note
+      tags:
+      - notes
+swagger: "2.0"

@@ -13,8 +13,17 @@ import (
 	"github.com/sultansyah/note-api/internal/note"
 	"github.com/sultansyah/note-api/internal/token"
 	"github.com/sultansyah/note-api/internal/user"
+
+	_ "github.com/sultansyah/note-api/docs"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
+// @title           Notes API
+// @version         1.0
+// @description     A REST API for managing notes and user authentication
+// @host           localhost:8080
+// @BasePath       /api/v1
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -62,6 +71,8 @@ func main() {
 
 	router := gin.Default()
 	router.Use(cors.Default())
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := router.Group("/api/v1")
 

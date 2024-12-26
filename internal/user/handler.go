@@ -25,6 +25,14 @@ func NewUserHandler(userService UserService, tokenService token.TokenService) Us
 	return &UserHandlerImpl{UserService: userService, TokenService: tokenService}
 }
 
+// @Summary      Register new user
+// @Description  Register a new user account
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        input body user.CreateUserRequest true "User registration details"
+// @Success      200  {object}  helper.WebResponse{data=user.UserWithToken}
+// @Router       /auth/register [post]
 func (u *UserHandlerImpl) Register(c *gin.Context) {
 	var input CreateUserRequest
 
@@ -52,6 +60,14 @@ func (u *UserHandlerImpl) Register(c *gin.Context) {
 	})
 }
 
+// @Summary      User login
+// @Description  Authenticate user and get token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        input body user.LoginUserRequest true "User login credentials"
+// @Success      200  {object}  helper.WebResponse{data=user.UserWithToken}
+// @Router       /auth/login [post]
 func (u *UserHandlerImpl) Login(c *gin.Context) {
 	var input LoginUserRequest
 
@@ -79,6 +95,15 @@ func (u *UserHandlerImpl) Login(c *gin.Context) {
 	})
 }
 
+// @Summary      Edit user email
+// @Description  Update authenticated user's email
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        input body user.EditEmailUserRequest true "New email"
+// @Security     BearerAuth
+// @Success      200  {object}  helper.WebResponse
+// @Router       /auth/email [post]
 func (u *UserHandlerImpl) EditEmail(c *gin.Context) {
 	var input EditEmailUserRequest
 
@@ -102,6 +127,15 @@ func (u *UserHandlerImpl) EditEmail(c *gin.Context) {
 	})
 }
 
+// @Summary      Edit user name
+// @Description  Update authenticated user's name
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        input body user.EditNameUserRequest true "New name"
+// @Security     BearerAuth
+// @Success      200  {object}  helper.WebResponse
+// @Router       /auth/name [post]
 func (u *UserHandlerImpl) EditName(c *gin.Context) {
 	var input EditNameUserRequest
 
@@ -125,6 +159,15 @@ func (u *UserHandlerImpl) EditName(c *gin.Context) {
 	})
 }
 
+// @Summary      Edit user password
+// @Description  Update authenticated user's password
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        input body user.EditPasswordUserRequest true "New password"
+// @Security     BearerAuth
+// @Success      200  {object}  helper.WebResponse
+// @Router       /auth/password [post]
 func (u *UserHandlerImpl) EditPassword(c *gin.Context) {
 	var input EditPasswordUserRequest
 

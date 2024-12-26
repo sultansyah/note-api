@@ -23,6 +23,15 @@ func NewNoteHandler(noteService NoteService) NoteHandler {
 	return &NoteHandlerImpl{NoteService: noteService}
 }
 
+// @Summary      Create new note
+// @Description  Create a new note for authenticated user
+// @Tags         notes
+// @Accept       json
+// @Produce      json
+// @Param        input body note.CreateNoteRequest true "Note details"
+// @Security     BearerAuth
+// @Success      200  {object}  helper.WebResponse{data=note.Note}
+// @Router       /notes [post]
 func (n *NoteHandlerImpl) Create(c *gin.Context) {
 	var input CreateNoteRequest
 
@@ -46,6 +55,15 @@ func (n *NoteHandlerImpl) Create(c *gin.Context) {
 	})
 }
 
+// @Summary      Delete note
+// @Description  Delete an existing note
+// @Tags         notes
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Note ID"
+// @Security     BearerAuth
+// @Success      200  {object}  helper.WebResponse
+// @Router       /notes/{id} [delete]
 func (n *NoteHandlerImpl) Delete(c *gin.Context) {
 	var input GetNoteRequest
 
@@ -69,6 +87,16 @@ func (n *NoteHandlerImpl) Delete(c *gin.Context) {
 	})
 }
 
+// @Summary      Edit note
+// @Description  Update an existing note
+// @Tags         notes
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Note ID"
+// @Param        input body note.CreateNoteRequest true "Updated note details"
+// @Security     BearerAuth
+// @Success      200  {object}  helper.WebResponse{data=note.Note}
+// @Router       /notes/{id} [put]
 func (n *NoteHandlerImpl) Edit(c *gin.Context) {
 	var inputId GetNoteRequest
 	if !helper.BindAndValidateURi(c, &inputId) {
@@ -96,6 +124,14 @@ func (n *NoteHandlerImpl) Edit(c *gin.Context) {
 	})
 }
 
+// @Summary      Get all notes
+// @Description  Get all notes for authenticated user
+// @Tags         notes
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200  {object}  helper.WebResponse{data=[]note.Note}
+// @Router       /notes [get]
 func (n *NoteHandlerImpl) FindAll(c *gin.Context) {
 	userId := c.MustGet("userId").(int)
 
@@ -113,6 +149,15 @@ func (n *NoteHandlerImpl) FindAll(c *gin.Context) {
 	})
 }
 
+// @Summary      Get note by ID
+// @Description  Get a specific note by its ID
+// @Tags         notes
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Note ID"
+// @Security     BearerAuth
+// @Success      200  {object}  helper.WebResponse{data=note.Note}
+// @Router       /notes/{id} [get]
 func (n *NoteHandlerImpl) FindById(c *gin.Context) {
 	var input GetNoteRequest
 
