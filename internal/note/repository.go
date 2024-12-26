@@ -11,8 +11,8 @@ type NoteRepository interface {
 	Create(ctx context.Context, tx *sql.Tx, note Note) (Note, error)
 	Edit(ctx context.Context, tx *sql.Tx, note Note) (Note, error)
 	Delete(ctx context.Context, tx *sql.Tx, noteId int) error
-	Get(ctx context.Context, tx *sql.Tx, noteId int) (Note, error)
-	Gets(ctx context.Context, tx *sql.Tx) ([]Note, error)
+	FindById(ctx context.Context, tx *sql.Tx, noteId int) (Note, error)
+	FindAll(ctx context.Context, tx *sql.Tx, userId int) ([]Note, error)
 }
 
 type NoteRepositoryImpl struct {
@@ -51,9 +51,9 @@ func (n *NoteRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, noteId int)
 }
 
 func (n *NoteRepositoryImpl) Edit(ctx context.Context, tx *sql.Tx, note Note) (Note, error) {
-	sql := "update notes set note = ?, status = ?, priority = ?, category = ?, tags = ?"
+	sql := "update notes set note = ?, status = ?, priority = ?, category = ?, tags = ? where id = ?"
 
-	result, err := tx.ExecContext(ctx, sql, note.Note, note.Status, note.Priority, note.Category, note.Tags)
+	result, err := tx.ExecContext(ctx, sql, note.Note, note.Status, note.Priority, note.Category, note.Tags, note.Id)
 	if err != nil {
 		return Note{}, err
 	}
@@ -68,7 +68,7 @@ func (n *NoteRepositoryImpl) Edit(ctx context.Context, tx *sql.Tx, note Note) (N
 	return note, nil
 }
 
-func (n *NoteRepositoryImpl) Get(ctx context.Context, tx *sql.Tx, noteId int) (Note, error) {
+func (n *NoteRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, noteId int) (Note, error) {
 	sql := "select id, user_id, note, status, priority, category, tags, created_at, updated_at from notes where id = ?"
 
 	row, err := tx.QueryContext(ctx, sql, noteId)
@@ -91,10 +91,10 @@ func (n *NoteRepositoryImpl) Get(ctx context.Context, tx *sql.Tx, noteId int) (N
 	return Note{}, helper.ErrNotFound
 }
 
-func (n *NoteRepositoryImpl) Gets(ctx context.Context, tx *sql.Tx) ([]Note, error) {
-	sql := "select id, user_id, note, status, priority, category, tags, created_at, updated_at from notes"
+func (n *NoteRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx, userId int) ([]Note, error) {
+	sql := "select id, user_id, note, status, priority, category, tags, created_at, updated_at from notes where user_id = ?"
 
-	rows, err := tx.QueryContext(ctx, sql)
+	rows, err := tx.QueryContext(ctx, sql, userId)
 	if err != nil {
 		return []Note{}, err
 	}

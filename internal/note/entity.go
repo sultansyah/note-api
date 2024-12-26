@@ -9,7 +9,7 @@ import (
 type Note struct {
 	Id        int       `json:"id"`
 	UserId    int       `json:"user_id"`
-	Note      int       `json:"note"`
+	Note      string    `json:"note"`
 	Status    string    `json:"status"`
 	Priority  string    `json:"priority"`
 	Category  string    `json:"category"`
