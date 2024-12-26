@@ -1,1 +1,37 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Environment variables
 .env
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# IDE specific files
+.idea
+.vscode
+
+# Swagger docs
+docs/
+swagger.json
+swagger.yaml
+
+# Database
+*.db
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
