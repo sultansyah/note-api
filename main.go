@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sultansyah/note-api/internal/config"
+	"github.com/sultansyah/note-api/internal/middleware"
 	"github.com/sultansyah/note-api/internal/note"
 	"github.com/sultansyah/note-api/internal/token"
 	"github.com/sultansyah/note-api/internal/user"
@@ -66,15 +67,15 @@ func main() {
 
 	api.POST("/auth/register", userHandler.Register)
 	api.POST("/auth/login", userHandler.Login)
-	api.POST("/auth/name", userHandler.EditName)
-	api.POST("/auth/email", userHandler.EditEmail)
-	api.POST("/auth/password", userHandler.EditPassword)
+	api.POST("/auth/name", middleware.AuthMiddleware(tokenService), userHandler.EditName)
+	api.POST("/auth/email", middleware.AuthMiddleware(tokenService), userHandler.EditEmail)
+	api.POST("/auth/password", middleware.AuthMiddleware(tokenService), userHandler.EditPassword)
 
-	api.POST("/notes", noteHandler.Create)
-	api.PUT("/notes/{id}", noteHandler.Edit)
-	api.DELETE("/notes/{id}", noteHandler.Delete)
-	api.GET("/notes/{id}", noteHandler.FindById)
-	api.GET("/notes", noteHandler.FindAll)
+	api.POST("/notes", middleware.AuthMiddleware(tokenService), noteHandler.Create)
+	api.PUT("/notes/{id}", middleware.AuthMiddleware(tokenService), noteHandler.Edit)
+	api.DELETE("/notes/{id}", middleware.AuthMiddleware(tokenService), noteHandler.Delete)
+	api.GET("/notes/{id}", middleware.AuthMiddleware(tokenService), noteHandler.FindById)
+	api.GET("/notes", middleware.AuthMiddleware(tokenService), noteHandler.FindAll)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
