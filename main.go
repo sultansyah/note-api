@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sultansyah/note-api/internal/config"
+	"github.com/sultansyah/note-api/internal/note"
 	"github.com/sultansyah/note-api/internal/token"
 	"github.com/sultansyah/note-api/internal/user"
 )
@@ -54,6 +55,10 @@ func main() {
 	userService := user.NewUserService(userRepository, db)
 	userHandler := user.NewUserHandler(userService, tokenService)
 
+	noteRepository := note.NewNoteRepository()
+	noteService := note.NewNoteService(noteRepository, db)
+	noteHandler := note.NewNoteHandler(noteService)
+
 	router := gin.Default()
 	router.Use(cors.Default())
 
@@ -64,6 +69,12 @@ func main() {
 	api.POST("/auth/name", userHandler.EditName)
 	api.POST("/auth/email", userHandler.EditEmail)
 	api.POST("/auth/password", userHandler.EditPassword)
+
+	api.POST("/notes", noteHandler.Create)
+	api.PUT("/notes/{id}", noteHandler.Edit)
+	api.DELETE("/notes/{id}", noteHandler.Delete)
+	api.GET("/notes/{id}", noteHandler.FindById)
+	api.GET("/notes", noteHandler.FindAll)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
