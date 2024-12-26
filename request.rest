@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:8080/api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU0ODYyNjYsInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6OX0.y56hbIcVuaM6XjSdznEVIz7kB_7-R2JEalNqZNJtAiY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU0ODc3ODMsInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6OX0.ixDpERSPEzS0PrYkhDQ7GWcmZF6UgjW4kEC-DMRsFP8
 
 ### Register User
 POST {{baseUrl}}/auth/register
@@ -19,7 +19,7 @@ Content-Type: application/json
 
 {
     "email": "example5@example.com",
-    "password": "secret123"
+    "password": "new123"
 }
 
 ### Edit User Name
@@ -28,7 +28,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "name": "ubah nama"
+    "name": "ubah nama1"
 }
 
 ### Edit User Email
@@ -37,7 +37,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "email": "john.smith@example.com"
+    "email": "example5@example.com"
 }
 
 ### Edit User Password
@@ -46,7 +46,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "password": "newpassword123"
+    "password": "new123"
 }
 
 ### Create Note
@@ -55,7 +55,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "note": "Buy groceries",
+    "note": "Buy groceries1",
     "status": "pending",
     "priority": "high",
     "category": "personal",
@@ -63,7 +63,7 @@ Content-Type: application/json
 }
 
 ### Edit Note
-PUT {{baseUrl}}/notes/1
+PUT {{baseUrl}}/notes/3
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -76,11 +76,11 @@ Content-Type: application/json
 }
 
 ### Delete Note
-DELETE {{baseUrl}}/notes/1
+DELETE {{baseUrl}}/notes/3
 Authorization: Bearer {{token}}
 
 ### Get Note by ID
-GET {{baseUrl}}/notes/1
+GET {{baseUrl}}/notes/2
 Authorization: Bearer {{token}}
 
 ### Get All Notes

@@ -69,7 +69,11 @@ func (n *NoteRepositoryImpl) Edit(ctx context.Context, tx *sql.Tx, note Note) (N
 }
 
 func (n *NoteRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, noteId int) (Note, error) {
-	sql := "select id, user_id, note, status, priority, category, tags, created_at, updated_at from notes where id = ?"
+	sql := `select notes.id, notes.user_id, notes.note, notes.status, notes.priority, notes.category, notes.tags, notes.created_at, notes.updated_at, users.id, users.name, users.email, users.role
+	from notes
+	join users on users.id = notes.user_id
+	where notes.id = ?
+	`
 
 	row, err := tx.QueryContext(ctx, sql, noteId)
 	if err != nil {
@@ -80,7 +84,7 @@ func (n *NoteRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, noteId in
 	var note Note
 
 	if row.Next() {
-		err := row.Scan(&note.Id, &note.UserId, &note.Note, &note.Status, &note.Priority, &note.Category, &note.Tags, &note.CreatedAt, &note.UpdatedAt)
+		err := row.Scan(&note.Id, &note.UserId, &note.Note, &note.Status, &note.Priority, &note.Category, &note.Tags, &note.CreatedAt, &note.UpdatedAt, &note.User.Id, &note.User.Name, &note.User.Email, &note.User.Role)
 		if err != nil {
 			return Note{}, err
 		}
@@ -92,7 +96,11 @@ func (n *NoteRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, noteId in
 }
 
 func (n *NoteRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx, userId int) ([]Note, error) {
-	sql := "select id, user_id, note, status, priority, category, tags, created_at, updated_at from notes where user_id = ?"
+	sql := `select notes.id, notes.user_id, notes.note, notes.status, notes.priority, notes.category, notes.tags, notes.created_at, notes.updated_at, users.id, users.name, users.email, users.role
+	from notes 
+	join users on users.id = notes.user_id
+	where notes.user_id = ?
+	`
 
 	rows, err := tx.QueryContext(ctx, sql, userId)
 	if err != nil {
@@ -102,19 +110,15 @@ func (n *NoteRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx, userId int
 
 	var notes []Note
 
-	if rows.Next() {
-		for rows.Next() {
-			var note Note
+	for rows.Next() {
+		var note Note
 
-			if err := rows.Scan(&note.Id, &note.UserId, &note.Note, &note.Status, &note.Priority, &note.Category, &note.Tags, &note.CreatedAt, &note.UpdatedAt); err != nil {
-				return []Note{}, err
-			}
-
-			notes = append(notes, note)
+		if err := rows.Scan(&note.Id, &note.UserId, &note.Note, &note.Status, &note.Priority, &note.Category, &note.Tags, &note.CreatedAt, &note.UpdatedAt, &note.User.Id, &note.User.Name, &note.User.Email, &note.User.Role); err != nil {
+			return []Note{}, err
 		}
 
-		return notes, nil
+		notes = append(notes, note)
 	}
 
-	return []Note{}, helper.ErrNotFound
+	return notes, nil
 }

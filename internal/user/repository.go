@@ -67,7 +67,7 @@ func (u *UserRepositoryImpl) EditPassword(ctx context.Context, tx *sql.Tx, user 
 func (u *UserRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, userId int) (User, error) {
 	var user User
 
-	sql := `select id, name, email, role, created_at, updated_at
+	sql := `select id, name, email, password, role, created_at, updated_at
 			from users
 			where id = ?
 			`
@@ -80,7 +80,7 @@ func (u *UserRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, userId in
 	defer row.Close()
 
 	if row.Next() {
-		err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+		err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			return user, err
 		}
@@ -94,7 +94,7 @@ func (u *UserRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, userId in
 func (u *UserRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, email string) (User, error) {
 	var user User
 
-	sql := `select id, name, email, role, created_at, updated_at
+	sql := `select id, name, email, password, role, created_at, updated_at
 			from users
 			where email = ?
 			`
@@ -107,7 +107,7 @@ func (u *UserRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, email 
 	defer row.Close()
 
 	if row.Next() {
-		err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+		err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			return user, err
 		}

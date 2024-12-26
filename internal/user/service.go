@@ -45,6 +45,15 @@ func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserRequest) (Us
 		return UserWithToken{}, helper.ErrNotFound
 	}
 
+	isSame, err := CompareHashPassword(user.Password, input.Password)
+	if err != nil {
+		return UserWithToken{}, err
+	}
+
+	if !isSame {
+		return UserWithToken{}, helper.ErrUnauthorized
+	}
+
 	token, err := u.TokenService.GenerateToken(user.Id, user.Role)
 	if err != nil {
 		return UserWithToken{}, err

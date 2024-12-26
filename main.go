@@ -85,10 +85,10 @@ func main() {
 	api.POST("/auth/password", middleware.AuthMiddleware(tokenService), userHandler.EditPassword)
 
 	api.POST("/notes", middleware.AuthMiddleware(tokenService), noteHandler.Create)
-	api.PUT("/notes/{id}", middleware.AuthMiddleware(tokenService), noteHandler.Edit)
-	api.DELETE("/notes/{id}", middleware.AuthMiddleware(tokenService), noteHandler.Delete)
-	api.GET("/notes/{id}", middleware.AuthMiddleware(tokenService), noteHandler.FindById)
+	api.PUT("/notes/:id", middleware.AuthMiddleware(tokenService), noteHandler.Edit)
+	api.DELETE("/notes/:id", middleware.AuthMiddleware(tokenService), noteHandler.Delete)
 	api.GET("/notes", middleware.AuthMiddleware(tokenService), noteHandler.FindAll)
+	api.GET("/notes/:id", middleware.AuthMiddleware(tokenService), noteHandler.FindById)
 
 	if err := router.Run(); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
