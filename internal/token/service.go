@@ -1,10 +1,10 @@
 package token
 
 import (
-	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/sultansyah/note-api/internal/helper"
 )
 
 type TokenService interface {
@@ -40,7 +40,7 @@ func (t *TokenServiceImpl) GenerateToken(userId int, role string) (string, error
 func (t *TokenServiceImpl) ValidateToken(encodedToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(encodedToken, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, errors.New("invalid token signing method")
+			return nil, helper.ErrUnauthorized
 		}
 		return t.key, nil
 	})
@@ -52,11 +52,11 @@ func (t *TokenServiceImpl) ValidateToken(encodedToken string) (*jwt.Token, error
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if exp, ok := claims["exp"].(float64); ok {
 			if time.Now().Unix() > int64(exp) {
-				return nil, errors.New("token has expired")
+				return nil, helper.ErrUnauthorized
 			}
 		}
 		return token, nil
 	}
 
-	return nil, errors.New("invalid token claims")
+	return nil, helper.ErrUnauthorized
 }
