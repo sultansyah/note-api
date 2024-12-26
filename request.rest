@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:8080/api/v1
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU0ODc3ODMsInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6OX0.ixDpERSPEzS0PrYkhDQ7GWcmZF6UgjW4kEC-DMRsFP8
+@token = 
 
 ### Register User
 POST {{baseUrl}}/auth/register
