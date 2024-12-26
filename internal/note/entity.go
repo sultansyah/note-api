@@ -14,7 +14,7 @@ type Note struct {
 	Priority  string    `json:"priority"`
 	Category  string    `json:"category"`
 	Tags      string    `json:"tags"`
-	User      user.User `json:"user" gorm:"-"`
+	User      user.User `json:"user"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
