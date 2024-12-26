@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -59,11 +60,12 @@ func main() {
 		}
 	}()
 
-	tokenService := token.NewTokenService(jwtSecretKey)
+	fmt.Println("key = ", jwtSecretKey)
+	tokenService := token.NewTokenService([]byte(jwtSecretKey))
 
 	userRepository := user.NewUserRepository()
-	userService := user.NewUserService(userRepository, db)
-	userHandler := user.NewUserHandler(userService, tokenService)
+	userService := user.NewUserService(userRepository, db, tokenService)
+	userHandler := user.NewUserHandler(userService)
 
 	noteRepository := note.NewNoteRepository()
 	noteService := note.NewNoteService(noteRepository, db)

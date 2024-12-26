@@ -1,0 +1,88 @@
+### Variables
+@baseUrl = http://localhost:8080/api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU0ODYyNjYsInJvbGUiOiJ1c2VyIiwidXNlcl9pZCI6OX0.y56hbIcVuaM6XjSdznEVIz7kB_7-R2JEalNqZNJtAiY
+
+### Register User
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "name": "example5",
+    "email": "example5@example.com",
+    "password": "secret123",
+    "role": "user"
+}
+
+### Login User
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "example5@example.com",
+    "password": "secret123"
+}
+
+### Edit User Name
+POST {{baseUrl}}/auth/name
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "ubah nama"
+}
+
+### Edit User Email
+POST {{baseUrl}}/auth/email
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "email": "john.smith@example.com"
+}
+
+### Edit User Password
+POST {{baseUrl}}/auth/password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "password": "newpassword123"
+}
+
+### Create Note
+POST {{baseUrl}}/notes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "note": "Buy groceries",
+    "status": "pending",
+    "priority": "high",
+    "category": "personal",
+    "tags": "shopping,home"
+}
+
+### Edit Note
+PUT {{baseUrl}}/notes/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "note": "Buy groceries and cleaning supplies",
+    "status": "in-progress",
+    "priority": "medium",
+    "category": "personal",
+    "tags": "shopping,home,cleaning"
+}
+
+### Delete Note
+DELETE {{baseUrl}}/notes/1
+Authorization: Bearer {{token}}
+
+### Get Note by ID
+GET {{baseUrl}}/notes/1
+Authorization: Bearer {{token}}
+
+### Get All Notes
+GET {{baseUrl}}/notes
+Authorization: Bearer {{token}}

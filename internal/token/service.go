@@ -13,11 +13,11 @@ type TokenService interface {
 }
 
 type TokenServiceImpl struct {
-	key string
+	Key []byte
 }
 
-func NewTokenService(key string) TokenService {
-	return &TokenServiceImpl{key: key}
+func NewTokenService(key []byte) TokenService {
+	return &TokenServiceImpl{Key: key}
 }
 
 func (t *TokenServiceImpl) GenerateToken(userId int, role string) (string, error) {
@@ -29,7 +29,7 @@ func (t *TokenServiceImpl) GenerateToken(userId int, role string) (string, error
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signedToken, err := token.SignedString(t.key)
+	signedToken, err := token.SignedString(t.Key)
 	if err != nil {
 		return "", err
 	}
@@ -42,7 +42,7 @@ func (t *TokenServiceImpl) ValidateToken(encodedToken string) (*jwt.Token, error
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, helper.ErrUnauthorized
 		}
-		return t.key, nil
+		return t.Key, nil
 	})
 
 	if err != nil {

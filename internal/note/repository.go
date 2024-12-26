@@ -80,7 +80,7 @@ func (n *NoteRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, noteId in
 	var note Note
 
 	if row.Next() {
-		err := row.Scan(&note)
+		err := row.Scan(&note.Id, &note.UserId, &note.Note, &note.Status, &note.Priority, &note.Category, &note.Tags, &note.CreatedAt, &note.UpdatedAt)
 		if err != nil {
 			return Note{}, err
 		}

@@ -6,12 +6,13 @@ import (
 	"strconv"
 
 	"github.com/sultansyah/note-api/internal/helper"
+	"github.com/sultansyah/note-api/internal/token"
 )
 
 type UserService interface {
-	Create(ctx context.Context, input CreateUserRequest) (User, error)
+	Create(ctx context.Context, input CreateUserRequest) (UserWithToken, error)
 	FindById(ctx context.Context, input FindUserRequest) (User, error)
-	Login(ctx context.Context, input LoginUserRequest) (User, error)
+	Login(ctx context.Context, input LoginUserRequest) (UserWithToken, error)
 	EditName(ctx context.Context, input EditNameUserRequest, userId int) error
 	EditPassword(ctx context.Context, input EditPasswordUserRequest, userId int) error
 	EditEmail(ctx context.Context, input EditEmailUserRequest, userId int) error
@@ -20,52 +21,58 @@ type UserService interface {
 type UserServiceImpl struct {
 	UserRepository UserRepository
 	DB             *sql.DB
+	TokenService   token.TokenService
 }
 
-func NewUserService(userRepository UserRepository, DB *sql.DB) UserService {
-	return &UserServiceImpl{UserRepository: userRepository, DB: DB}
+func NewUserService(userRepository UserRepository, DB *sql.DB, tokenService token.TokenService) UserService {
+	return &UserServiceImpl{UserRepository: userRepository, DB: DB, TokenService: tokenService}
 }
 
-func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserRequest) (User, error) {
+func (u *UserServiceImpl) Login(ctx context.Context, input LoginUserRequest) (UserWithToken, error) {
 	tx, err := u.DB.Begin()
 	if err != nil {
-		return User{}, nil
+		return UserWithToken{}, nil
 	}
 
 	defer helper.HandleTransaction(tx, &err)
 
 	user, err := u.UserRepository.FindByEmail(ctx, tx, input.Email)
 	if err != nil {
-		return User{}, err
+		return UserWithToken{}, err
 	}
 
 	if user.Id == 0 {
-		return User{}, helper.ErrNotFound
+		return UserWithToken{}, helper.ErrNotFound
 	}
 
-	return user, nil
+	token, err := u.TokenService.GenerateToken(user.Id, user.Role)
+	if err != nil {
+		return UserWithToken{}, err
+	}
+
+	return UserFormatterWithToken(user, token), nil
 }
 
-func (u *UserServiceImpl) Create(ctx context.Context, input CreateUserRequest) (User, error) {
+func (u *UserServiceImpl) Create(ctx context.Context, input CreateUserRequest) (UserWithToken, error) {
 	tx, err := u.DB.Begin()
 	if err != nil {
-		return User{}, err
+		return UserWithToken{}, err
 	}
 
 	defer helper.HandleTransaction(tx, &err)
 
 	existUser, err := u.UserRepository.FindByEmail(ctx, tx, input.Email)
-	if err != nil {
-		return existUser, err
+	if err != nil && err != helper.ErrNotFound {
+		return UserWithToken{}, err
 	}
 
 	if existUser.Id > 0 {
-		return User{}, helper.ErrAlreadyExists
+		return UserWithToken{}, helper.ErrAlreadyExists
 	}
 
 	passwordHash, err := HashPassword(input.Password)
 	if err != nil {
-		return User{}, err
+		return UserWithToken{}, err
 	}
 
 	user := User{
@@ -77,10 +84,15 @@ func (u *UserServiceImpl) Create(ctx context.Context, input CreateUserRequest) (
 
 	user, err = u.UserRepository.Create(ctx, tx, user)
 	if err != nil {
-		return user, err
+		return UserWithToken{}, err
 	}
 
-	return user, nil
+	token, err := u.TokenService.GenerateToken(user.Id, user.Role)
+	if err != nil {
+		return UserWithToken{}, err
+	}
+
+	return UserFormatterWithToken(user, token), nil
 }
 
 func (u *UserServiceImpl) FindById(ctx context.Context, input FindUserRequest) (User, error) {

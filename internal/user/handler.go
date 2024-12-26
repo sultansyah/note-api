@@ -1,11 +1,11 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sultansyah/note-api/internal/helper"
-	"github.com/sultansyah/note-api/internal/token"
 )
 
 type UserHandler interface {
@@ -17,12 +17,11 @@ type UserHandler interface {
 }
 
 type UserHandlerImpl struct {
-	UserService  UserService
-	TokenService token.TokenService
+	UserService UserService
 }
 
-func NewUserHandler(userService UserService, tokenService token.TokenService) UserHandler {
-	return &UserHandlerImpl{UserService: userService, TokenService: tokenService}
+func NewUserHandler(userService UserService) UserHandler {
+	return &UserHandlerImpl{UserService: userService}
 }
 
 // @Summary      Register new user
@@ -41,12 +40,7 @@ func (u *UserHandlerImpl) Register(c *gin.Context) {
 	}
 
 	user, err := u.UserService.Create(c.Request.Context(), input)
-	if err != nil {
-		helper.HandleErrorResponse(c, err)
-		return
-	}
-
-	token, err := u.TokenService.GenerateToken(user.Id, user.Role)
+	fmt.Println("1 = ", err)
 	if err != nil {
 		helper.HandleErrorResponse(c, err)
 		return
@@ -56,7 +50,7 @@ func (u *UserHandlerImpl) Register(c *gin.Context) {
 		Code:    http.StatusOK,
 		Status:  "success",
 		Message: "register success",
-		Data:    UserFormatterWithToken(user, token),
+		Data:    user,
 	})
 }
 
@@ -81,17 +75,11 @@ func (u *UserHandlerImpl) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := u.TokenService.GenerateToken(user.Id, user.Role)
-	if err != nil {
-		helper.HandleErrorResponse(c, err)
-		return
-	}
-
 	helper.APIResponse(c, helper.WebResponse{
 		Code:    http.StatusOK,
 		Status:  "success",
 		Message: "login success",
-		Data:    UserFormatterWithToken(user, token),
+		Data:    user,
 	})
 }
 

@@ -17,7 +17,7 @@ type DBConfig struct {
 }
 
 func InitDB(dbConfig DBConfig) (*sql.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		dbConfig.User,
 		dbConfig.Password,
 		dbConfig.Host,
