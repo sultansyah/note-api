@@ -2,6 +2,8 @@
 
 REST API for managing notes with user authentication built using Go and Gin framework.
 
+This is the backend for the Note API project. For the frontend, you can access it through the link sultansyah/note-frontend.
+
 ## Features
 - User authentication with JWT
 - CRUD operations for notes
